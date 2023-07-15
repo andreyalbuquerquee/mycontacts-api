@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsEmail, IsEmpty, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID } from "class-validator";
 
 export class CreateContactDto {
 
@@ -13,9 +13,10 @@ export class CreateContactDto {
 
     @IsNotEmpty()
     @IsString()
+    @IsPhoneNumber("BR")
     number: string;
-
-    @IsNotEmpty()
+    
+    @IsOptional()
     @IsString()
     @IsUUID()
     categoryId: string;
