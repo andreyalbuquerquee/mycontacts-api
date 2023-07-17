@@ -12,10 +12,6 @@ export class ContactsRepository {
     create(createDto: Prisma.ContactCreateArgs) {
         return this.prismaService.contact.create(createDto);
     }
-
-    findFirst(findFirstDto: Prisma.ContactFindFirstArgs) {
-        return this.prismaService.contact.findFirst(findFirstDto);
-    }
     
     findMany() {
         return this.prismaService.contact.findMany();

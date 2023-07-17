@@ -9,10 +9,6 @@ export class CategoriesRepository {
     create(createDto: Prisma.CategoryCreateArgs) {
         return this.prismaService.category.create(createDto);
     }
-
-    findFirst(findFirstDto: Prisma.CategoryFindFirstArgs) {
-        return this.prismaService.category.findFirst(findFirstDto)
-    }
     
     findMany() {
         return this.prismaService.category.findMany();

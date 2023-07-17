@@ -79,13 +79,13 @@ export class ContactsService {
   }
 
   private validateCategoryExistence(id: string) {
-    return this.categoriesRepo.findFirst({
+    return this.categoriesRepo.findUnique({
       where: { id },
     });
   }
 
   private validateContactExistence(id: string) {
-    return this.contactsRepo.findFirst({
+    return this.contactsRepo.findUnique({
       where: { id },
     });
   }
