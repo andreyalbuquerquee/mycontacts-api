@@ -2,10 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
 import { ContactsRepository } from 'src/shared/database/repositories/contacts.repository';
+import { CategoriesRepository } from 'src/shared/database/repositories/categories.repository';
 
 @Injectable()
 export class ContactsService {
-  constructor(private readonly contactsRepo: ContactsRepository) {}
+  constructor(private readonly contactsRepo: ContactsRepository,
+    private readonly categoriesRepo: CategoriesRepository) {}
 
   async create(createContactDto: CreateContactDto) {
     
@@ -21,23 +23,14 @@ export class ContactsService {
   }
 
   async findById(id: string) {
-    const contact = this.validateContactExistence(id)
+    return await this.contactsRepo.findUnique({
+      where: { id },
+    });
 
-    if (!contact) {
-      throw new NotFoundException('Contato não encontrado!')
-    }
-
-    return contact;
   }
 
   async updateById(id: string, updateContactDto: UpdateContactDto) {
     const { name, email, number, categoryId } = updateContactDto;
-    
-    const contact = this.validateContactExistence(id);
-
-    if (!contact) {
-      throw new NotFoundException('Contato não encontrado!');
-    }
 
     return await this.contactsRepo.update({
       where: { id },
@@ -53,9 +46,5 @@ export class ContactsService {
     return null;
   }
 
-  private async validateContactExistence (id: string) {
-    return await this.contactsRepo.findUnique({
-      where: { id },
-    });
-  }
+
 }
