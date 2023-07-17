@@ -13,6 +13,10 @@ export class ContactsRepository {
         return this.prismaService.contact.create(createDto);
     }
 
+    findFirst(findFirstDto: Prisma.ContactFindFirstArgs) {
+        return this.prismaService.contact.findFirst(findFirstDto);
+    }
+    
     findMany() {
         return this.prismaService.contact.findMany();
     }
