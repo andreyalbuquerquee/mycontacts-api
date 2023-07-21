@@ -13,11 +13,8 @@ export class ContactsService {
     const { name, email, number, categoryId } = createContactDto
     
     if (categoryId) {
-      const categoryFound = await this.validateCategoryExistence(categoryId)
-  
-      if (!categoryFound) {
-        throw new ConflictException('Categoria não encontrada!')
-      }} 
+      await this.validateCategoryExistence(categoryId)
+    } 
 
     return await this.contactsRepo.create({
       data: { name, email, number, categoryId }
@@ -30,11 +27,7 @@ export class ContactsService {
 
   async findById(id: string) {
     
-    const contact = await this.validateContactExistence(id)
-
-    if (!contact) {
-      throw new NotFoundException('Contado não encontrado!')
-    }
+    await this.validateContactExistence(id)
 
     return await this.contactsRepo.findUnique({
       where: { id },
@@ -43,20 +36,13 @@ export class ContactsService {
   }
 
   async updateById(id: string, updateContactDto: UpdateContactDto) {
-    const contact = await this.validateContactExistence(id);
-    
-    if (!contact) {
-      throw new NotFoundException('Contato não encontrado!')
-    }
+    await this.validateContactExistence(id);
     
     const { name, email, number, categoryId } = updateContactDto;
     
     if (categoryId) {
-    const categoryFound = await this.validateCategoryExistence(categoryId)
-
-    if (!categoryFound) {
-      throw new ConflictException('Categoria não encontrada!')
-    }} 
+    await this.validateCategoryExistence(categoryId)
+    } 
       
     return await this.contactsRepo.update({
       where: { id },
@@ -65,12 +51,8 @@ export class ContactsService {
   }
 
   async deleteById(id: string) {
-    const contact = await this.validateContactExistence(id);
+    await this.validateContactExistence(id);
     
-    if (!contact) {
-      throw new NotFoundException('Contato não encontrado!')
-    }
-
     await this.contactsRepo.delete({
       where: { id },
     });
@@ -78,17 +60,23 @@ export class ContactsService {
     return null;
   }
 
-  private validateCategoryExistence(id: string) {
-    return this.categoriesRepo.findUnique({
+  private async validateCategoryExistence(id: string) {
+    const category =  await this.categoriesRepo.findUnique({
       where: { id },
     });
+
+    if (!category) {
+      throw new NotFoundException('Categoria não encontrada!');
+    }
   }
 
-  private validateContactExistence(id: string) {
-    return this.contactsRepo.findUnique({
+  private async validateContactExistence(id: string) {
+    const contact =  await this.contactsRepo.findUnique({
       where: { id },
     });
+
+    if (!contact) {
+      throw new NotFoundException('Contato não encontrado!');
+    }
   }
-
-
 }
