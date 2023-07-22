@@ -8,15 +8,10 @@ export class CategoriesService {
   constructor(private readonly categoriesRepo: CategoriesRepository) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    
     const { name } = createCategoryDto;
 
-    const nameTaken = await this.validateNameExistence(name);
+    await this.validateNameExistence(name);
 
-    if (nameTaken) {
-      throw new ConflictException('Nome de categoria já existe!')
-    }
-    
     return await this.categoriesRepo.create({
       data: createCategoryDto,
     });
@@ -27,25 +22,22 @@ export class CategoriesService {
   }
 
   async findById(id: string) {
-    const category =  await this.validateCategoryExistence(id);
+    await this.validateCategoryExistence(id);
     
-    if (!category) {
-      throw new NotFoundException('category not found');
-    }
+    const category = this.categoriesRepo.findUnique({
+      where: { id },
+    });
 
     return category;
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    
     const { name } = updateCategoryDto;
     
-    const nameTaken = await this.validateNameExistence(name);
-
-    if (nameTaken) {
-      throw new ConflictException('Nome de categoria já existe!')
-    }
+    await this.validateCategoryExistence(id);
     
+    await this.validateNameExistence(name);
+
     return this.categoriesRepo.update({
       where: { id },
       data: { name },
@@ -53,12 +45,8 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    const category = await this.validateCategoryExistence(id)
+    await this.validateCategoryExistence(id);
 
-    if (!category) {
-      throw new NotFoundException('Categoria não encontrada!')
-    }
-    
     await this.categoriesRepo.delete({
       where: { id }
     });
@@ -66,15 +54,23 @@ export class CategoriesService {
     return null;
   }
 
-  private validateNameExistence(name: string) {
-    return this.categoriesRepo.findUnique({
+  private async validateNameExistence(name: string) {
+    const nameTaken = await this.categoriesRepo.findUnique({
       where: { name },
     });
+
+    if (nameTaken) {
+      throw new ConflictException('Nome de categoria já existe!');
+    }
   }
   
-  private validateCategoryExistence (id: string) {
-    return this.categoriesRepo.findUnique({
+  private async validateCategoryExistence (id: string) {
+    const category = await this.categoriesRepo.findUnique({
       where: { id },
     });
+
+    if (!category) {
+      throw new NotFoundException('Categoria não encontrada!');
+    }
   }
 }
